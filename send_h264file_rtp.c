@@ -10,8 +10,8 @@
 #include "h264tortp.h"
 
 #define DEFAULT_DEST_PORT           1234
-#define RTP_PAYLOAD_MAX_SIZE        1400
-#define SEND_BUF_SIZE               1500
+#define RTP_PAYLOAD_MAX_SIZE        64000
+#define SEND_BUF_SIZE               65000
 #define NAL_BUF_SIZE                1500 * 50
 #define SSRC_NUM                    10
 
@@ -159,13 +159,19 @@ static int h264nal2rtp_send(int framerate, uint8_t *pstStream, int nalu_len, lin
             /*
              * 3. 填充nal内容
              */
+            SENDBUFFER[12] = 0;
+            SENDBUFFER[13] = 0;
+            SENDBUFFER[14] = 0;
+            SENDBUFFER[15] = 1;
+            
     debug_print();
-            memcpy(SENDBUFFER + 13, nalu_buf + 1, nalu_len - 1);    /* 不拷贝nalu头 */
+            //memcpy(SENDBUFFER + 13, nalu_buf + 1, nalu_len - 1);    /* 不拷贝nalu头 */
+            memcpy(SENDBUFFER + 16, nalu_buf , nalu_len );    /* 不拷贝nalu头 */
 
             /*
              * 4. 发送打包好的rtp到客户端
              */
-            len_sendbuf = 12 + nalu_len;
+            len_sendbuf = 12 + 4 + nalu_len;
             send_data_to_client_list(SENDBUFFER, len_sendbuf, client_ip_list);
     debug_print();
         } else {    /* nalu_len > RTP_PAYLOAD_MAX_SIZE */

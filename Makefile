@@ -1,4 +1,4 @@
-CFLAGS = -Wall -O2
+CFLAGS = -g -Wall -O2
 LDLIBS = -lpthread
 
 TARGET := send_h264file_rtp \

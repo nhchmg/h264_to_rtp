@@ -7,7 +7,8 @@
 #include "llist.h"
 
 #define NAL_MAX     4000000
-#define H264        96
+//#define H264        96
+#define H264        98
 #define G711        8
 
 typedef struct rtp_header {
