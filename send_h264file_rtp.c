@@ -67,7 +67,8 @@ static void send_data_to_client_list(uint8_t *send_buf, size_t len_sendbuf, link
     debug_print("len is %d", len_sendbuf);
         // if ((ret = send(pnode_tmp0->node_info.socket_c, send_buf, len_sendbuf, MSG_DONTWAIT)) < 0) {
         if ((ret = send(pnode_tmp0->node_info.socket_c, send_buf, len_sendbuf, 0)) < 0) {
-            fprintf(stderr, "----- send fail errno is %d----\n", errno);
+
+            //fprintf(stderr, "----- send fail errno is %d----\n", errno);
             /* pnode_tmp->send_fail_n 失败次数加1 */
             if (errno > 0)
                 pnode_tmp0->send_fail_n++;
@@ -76,11 +77,11 @@ static void send_data_to_client_list(uint8_t *send_buf, size_t len_sendbuf, link
              * send连续失败次数达到阀值 MAX_SEND_FAIL_N 则删除该节点 
              */
             if (pnode_tmp0->send_fail_n > MAX_SEND_FAIL_N) {
-                close(pnode_tmp0->node_info.socket_c);
+                //close(pnode_tmp0->node_info.socket_c);
                 // pnode_tmp0 = delete_this_node(client_ip_list, pnode_tmp0);
             } /* if (pnode_tmp->send_fail_n > 20) */
 
-            perror("send");
+            //perror("send");
         } /* if (send(pnode_tmp0->node_info.socket_c, SENDBUF, send_bytes, 0) == -1) */
         pnode_tmp0 = pnode_tmp0->next;
     } /* while (pnode_tmp0) */
@@ -451,10 +452,18 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    fp = fopen(argv[1], "r");
-    if (!fp) {
-        perror("fopen");
-        exit(errno);
+    if (0 == strcmp("-",argv[1]) )
+    {
+      fp = stdin;
+      fprintf(stderr, "use stdin\n");
+    }
+    else
+    {
+      fp = fopen(argv[1], "r");
+      if (!fp) {
+          perror("fopen");
+          exit(errno);
+      }
     }
 
     fp_test = fopen("file_test.h264", "w");
