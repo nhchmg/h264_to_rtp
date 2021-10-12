@@ -136,6 +136,7 @@ static int h264nal2rtp_send(int framerate, uint8_t *pstStream, int nalu_len, lin
             rtp_hdr->version = 2;
             rtp_hdr->payload_type = H264;
 		    // rtp_hdr->marker = (pstStream->u32PackCount - 1 == i) ? 1 : 0;   /* 该包为一帧的结尾则置为1, 否则为0. rfc 1889 没有规定该位的用途 */
+	    rtp_hdr->marker = 1 ;   /* 该包为一帧的结尾则置为1, 否则为0. rfc 1889 没有规定该位的用途 */
 			rtp_hdr->seq_no = htons(++seq_num % UINT16_MAX);
             rtp_hdr->timestamp = htonl(ts_current);
             rtp_hdr->ssrc = htonl(SSRC_NUM);
@@ -405,10 +406,14 @@ static int copy_nal_from_file(FILE *fp, uint8_t *buf, int *len)
                 if (tmpbuf2[0] == 0x0) {
                     flag++;
                     tmpbuf[2] = tmpbuf2[0];
-                } else if (tmpbuf2[0] == 0x1) {
+                } 
+                /*
+                else if (tmpbuf2[0] == 0x1) {
                     flag = 0;
                     return *len;
-                } else {
+                }
+                */
+                else {
                     flag = 0;
                     buf[*len] = tmpbuf[0];
                     (*len)++;
@@ -476,7 +481,7 @@ int main(int argc, char **argv)
         fwrite(nal_buf, len, 1, fp_test);
         debug_print();
 #endif
-        ret = h264nal2rtp_send(25, nal_buf, len, CLIENT_IP_LIST);
+        ret = h264nal2rtp_send(24, nal_buf, len, CLIENT_IP_LIST);
         if (ret != -1)
             usleep(1000 * 20);
     }
